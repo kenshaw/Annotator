@@ -32,12 +32,14 @@ public class MainWindow : Hdy.ApplicationWindow {
   private Button            _redo_btn;
   private MenuButton        _pref_btn;
   private MenuButton        _export_btn;
+  private MenuButton        _save_and_quit_btn;
   private MenuButton        _zoom_btn;
   private ZoomWidget        _zoom;
   private Box               _box;
   private Editor            _editor;
   private Stack             _stack;
   private SList<FileFilter> _image_filters;
+  private string            _filename;
 
   private const GLib.ActionEntry[] action_entries = {
     { "action_open",            do_open },
@@ -242,6 +244,9 @@ public class MainWindow : Hdy.ApplicationWindow {
     _pref_btn = create_preferences();
     _header.pack_end( _pref_btn );
 
+    _save_and_quit_btn = create_save_and_quit();
+    _header.pack_end( _save_and_quit_btn );
+
     _export_btn = create_exports();
     _header.pack_end( _export_btn );
 
@@ -315,6 +320,19 @@ public class MainWindow : Hdy.ApplicationWindow {
 
     return( export_btn );
 
+  }
+
+  /* Create the save and quit menu button */
+  private MenuButton create_save_and_quit() {
+    var save_btn = new MenuButton();
+    save_btn.image = new Image.from_icon_name( "pane-hide-symbolic", get_icon_size() );
+    save_btn.set_tooltip_text( _( "Save and Quit" ) );
+    save_btn.set_sensitive( false );
+    save_btn.clicked.connect(() => {
+        _editor.canvas.image.export_image( "png",  _filename );
+        this.destroy();
+    });
+    return save_btn;
   }
 
   /* Creates the zoom menu */
@@ -482,9 +500,11 @@ public class MainWindow : Hdy.ApplicationWindow {
    image is successfully read and displayed.
   */
   public void open_file( string filename ) {
+    _filename = filename;
     _editor.open_image( filename );
     _zoom_btn.set_sensitive( true );
     _export_btn.set_sensitive( true );
+    _save_and_quit_btn.set_sensitive ( true );
   }
 
   /* Parses image data from standard output to use as pixbuf */
@@ -619,6 +639,7 @@ public class MainWindow : Hdy.ApplicationWindow {
         _editor.paste_image( pixbuf, false );
         _zoom_btn.set_sensitive( true );
         _export_btn.set_sensitive( true );
+        _save_and_quit_btn.set_sensitive( true );
       }
       if( !include ) {
         show();

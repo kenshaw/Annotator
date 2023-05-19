@@ -32,16 +32,7 @@ public class Exports {
     _exports = new Array<Export>();
 
     /* Add the exports */
-    add( new ExportImage( canvas, "jpeg", _( "JPEG" ), { ".jpg", ",.jpeg" } ) );
-    add( new ExportImage( canvas, "tiff", _( "TIFF" ), { ".tiff" } ) );
-    add( new ExportImage( canvas, "bmp",  _( "BMP" ),  { ".bmp" } ) );
-    add( new ExportPDF( canvas ) );
     add( new ExportPNG( canvas ) );
-    add( new ExportSVG( canvas ) );
-
-    clipboard = new ExportClipboard( canvas );
-    printer   = new ExportPrint( canvas );
-
   }
 
   private void add( Export export ) {
